@@ -1,23 +1,57 @@
----
-- name: Install Docker and Java on build-agent
-  hosts: agent
+- name: Configure devops-master
+  hosts: master
   become: yes
 
   tasks:
 
-    - name: Install Java 21
+    - name: Remove broken Jenkins repo if exists
+      file:
+        path: /etc/apt/sources.list.d/jenkins.list
+        state: absent
+
+    - name: Update system
+      apt:
+        update_cache: yes
+
+    - name: Install Java
       apt:
         name: openjdk-21-jdk
         state: present
-        update_cache: yes
 
-    - name: Install Docker
+    - name: Install Jenkins dependencies
       apt:
-        name: docker.io
+        name:
+          - wget
+          - gnupg
+          - fontconfig
         state: present
 
-    - name: Start Docker
+    - name: Download Jenkins WAR
+      get_url:
+        url: https://get.jenkins.io/war-stable/latest/jenkins.war
+        dest: /opt/jenkins.war
+
+    - name: Create Jenkins service
+      copy:
+        dest: /etc/systemd/system/jenkins.service
+        content: |
+          [Unit]
+          Description=Jenkins
+          After=network.target
+
+          [Service]
+          ExecStart=/usr/bin/java -jar /opt/jenkins.war
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd
+      shell: systemctl daemon-reload
+
+    - name: Start Jenkins
       service:
-        name: docker
+        name: jenkins
         state: started
         enabled: yes
