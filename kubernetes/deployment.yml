@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: food-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: food
+  template:
+    metadata:
+      labels:
+        app: food
+    spec:
+      containers:
+      - name: food
+        image: food-app
+        ports:
+        - containerPort: 80
