@@ -1,0 +1,11 @@
+[master]
+devops-master ansible_host=3.83.138.122
+
+[agent]
+build-agent ansible_host=100.53.78.94
+
+[kube]
+kube-server ansible_host=18.207.190.127
+
+[all:vars]
+ansible_user=ubuntu
