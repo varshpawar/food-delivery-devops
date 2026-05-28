@@ -3,6 +3,6 @@ provider "aws" {
 }
 
 resource "aws_instance" "kube" {
-  ami           = "ami-123456"
-  instance_type = "t2.medium"
+  ami           = "ami-0c02fb55956c7d316"
+  instance_type = "t2.micro"
 }
