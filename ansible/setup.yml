@@ -1,15 +1,11 @@
-- name: Configure devops-master
+---
+- name: Configure ci-master
   hosts: master
   become: yes
 
   tasks:
 
-    - name: Remove broken Jenkins repo if exists
-      file:
-        path: /etc/apt/sources.list.d/jenkins.list
-        state: absent
-
-    - name: Update system
+    - name: Update apt
       apt:
         update_cache: yes
 
@@ -48,7 +44,8 @@
           WantedBy=multi-user.target
 
     - name: Reload systemd
-      shell: systemctl daemon-reload
+      systemd:
+        daemon_reload: yes
 
     - name: Start Jenkins
       service:
@@ -57,12 +54,12 @@
         enabled: yes
 
 - name: Configure ci-agent
-  hosts: ci-agent
+  hosts: agent
   become: yes
 
   tasks:
 
-    - name: Update system
+    - name: Update apt
       apt:
         update_cache: yes
 
@@ -76,7 +73,7 @@
         name: docker.io
         state: present
 
-    - name: Start Docker Service
+    - name: Start Docker
       service:
         name: docker
         state: started
